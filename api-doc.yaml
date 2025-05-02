@@ -1,0 +1,1722 @@
+components:
+  parameters:
+    nonceHeader:
+      description: WordPress REST API nonce
+      in: header
+      name: x_wp_nonce
+      required: true
+      schema:
+        type: string
+  responses:
+    200Success:
+      description: Successful operation
+    400BadRequest:
+      description: Invalid input or missing parameters
+    401Unauthorized:
+      description: Unauthorized request
+    403Forbidden:
+      description: Forbidden
+    404NotFound:
+      description: Resource not found
+  securitySchemes:
+    nonceAuth:
+      in: header
+      name: x_wp_nonce
+      type: apiKey
+info:
+  description: Accurate and complete Swagger documentation based on actual endpoint
+    code.
+  title: Oberon API
+  version: 1.0.0
+openapi: 3.0.0
+paths:
+  /obrn/v1/auth/account/password:
+    delete:
+      description: "\u26A0\uFE0F Although DELETE operations cannot include a requestBody\
+        \ per OpenAPI spec, this endpoint expects a JSON body with a `current_password`\
+        \ field (base64 encoded). Ensure the client sends this field for successful\
+        \ operation."
+      operationId: auth_account_password_delete
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                EmptyPassword:
+                  summary: Empty password input
+                  value:
+                    message: Password empty
+                    success: false
+                IncorrectPassword:
+                  summary: Incorrect password
+                  value:
+                    message: Password incorrect
+                    success: false
+                Success:
+                  summary: Password removed successfully
+                  value:
+                    message: Password removed
+                    success: true
+          description: Successful password removal
+        '401':
+          content:
+            application/json:
+              example:
+                message: Unauthorized
+                success: false
+          description: Unauthorized user
+      summary: DELETE password to enable password-less login
+      tags:
+      - auth/account/password
+    post:
+      operationId: auth_account_password_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example:
+              confirm_password: cGFzc3dvcmQxMjM=
+              password: cGFzc3dvcmQxMjM=
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                EmptyPassword:
+                  summary: One or both passwords are empty
+                  value:
+                    message: Password empty
+                    success: false
+                MismatchPassword:
+                  summary: Passwords don't match
+                  value:
+                    message: Password doesn't match
+                    success: false
+                Success:
+                  summary: Password updated successfully
+                  value:
+                    message: Updated password
+                    success: true
+                UpdateFailed:
+                  summary: User password update failed
+                  value:
+                    message: Failed to update
+                    success: false
+          description: Password updated response
+      summary: POST to set a user password
+      tags:
+      - auth/account/password
+    put:
+      operationId: auth_account_password_put
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example:
+              confirm_password: bmV3cGFzcw==
+              current_password: Y3VycmVudHBhc3M=
+              password: bmV3cGFzcw==
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                EmptyFields:
+                  summary: Missing password fields
+                  value:
+                    message: Password empty
+                    success: false
+                IncorrectCurrentPassword:
+                  summary: Incorrect current password
+                  value:
+                    message: Incorrect current password
+                    success: false
+                MismatchPassword:
+                  summary: Passwords don't match
+                  value:
+                    message: Passwords don't match
+                    success: false
+                Success:
+                  summary: Password updated successfully
+                  value:
+                    message: Updated password
+                    success: true
+                UpdateFailed:
+                  summary: Password update failed
+                  value:
+                    message: Failed to update
+                    success: false
+          description: Password change response
+        '401':
+          content:
+            application/json:
+              example:
+                message: Unauthorized
+                success: false
+          description: Unauthorized request
+      summary: PUT to change user password
+      tags:
+      - auth/account/password
+  /obrn/v1/auth/account/payment-methods:
+    get:
+      operationId: auth_account_payment-methods_get
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data: true
+                status: success
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+      summary: GET /obrn/v1/auth/account/payment-methods
+      tags:
+      - auth/account/payment-methods
+    post:
+      operationId: auth_account_payment-methods_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example: {}
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data: true
+                status: success
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+      summary: POST /obrn/v1/auth/account/payment-methods
+      tags:
+      - auth/account/payment-methods
+  /obrn/v1/auth/account/profile:
+    post:
+      operationId: auth_account_profile_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example:
+              accountSetup: true
+              fields:
+                custom_field_1: Custom value
+                user_email: alice@example.com
+                user_firstname: Alice
+                user_lastname: Smith
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Failure:
+                  summary: Update failed
+                  value:
+                    message: Something went wrong
+                    success: false
+                Success:
+                  summary: Profile updated
+                  value:
+                    message: Updated successfully
+                    success: true
+          description: User profile update response
+        '401':
+          content:
+            application/json:
+              examples:
+                InvalidEmail:
+                  summary: Invalid email address
+                  value:
+                    code: rest_forbidden
+                    data:
+                      status: 401
+                    message: Email address is invalid
+                NoUser:
+                  summary: User not found
+                  value:
+                    code: rest_forbidden
+                    data:
+                      status: 401
+                    message: No user found
+          description: Unauthorized or invalid input
+      summary: POST to update user profile
+      tags:
+      - auth/account/profile
+  /obrn/v1/auth/account/subscriptions:
+    get:
+      operationId: auth_account_subscriptions_get
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                message: Not a valid request
+                status: error
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+      summary: GET /obrn/v1/auth/account/subscriptions
+      tags:
+      - auth/account/subscriptions
+    post:
+      operationId: auth_account_subscriptions_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example: {}
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data: true
+                status: success
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+      summary: POST /obrn/v1/auth/account/subscriptions
+      tags:
+      - auth/account/subscriptions
+  /obrn/v1/auth/account/transactions:
+    get:
+      operationId: auth_account_transactions_get
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data: true
+                status: success
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+      summary: GET /obrn/v1/auth/account/transactions
+      tags:
+      - auth/account/transactions
+    post:
+      operationId: auth_account_transactions_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example: {}
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data: true
+                status: success
+          description: OK
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+      summary: POST /obrn/v1/auth/account/transactions
+      tags:
+      - auth/account/transactions
+  /obrn/v1/auth/forgot:
+    post:
+      operationId: auth_forgot_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example:
+              email: user@example.com
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                EmailNotFound:
+                  summary: Email address not registered
+                  value:
+                    message: Email address not exists
+                    success: false
+                ErrorThrown:
+                  summary: Exception during processing
+                  value:
+                    message: Some unexpected error
+                    success: false
+                ResetLinkSent:
+                  summary: Reset link sent successfully
+                  value:
+                    message: Password reset link sent
+                    resetLink: https://example.com/login?action=rp&key=XYZ123&login=user
+                    success: true
+          description: Password reset result
+        '401':
+          content:
+            application/json:
+              example:
+                code: rest_forbidden
+                data:
+                  status: 401
+                message: Not enough details provided
+          description: Missing or empty email input
+      summary: POST to request password reset link
+      tags:
+      - auth/forgot
+  /obrn/v1/auth/login:
+    post:
+      operationId: auth_login_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example:
+              check: 0
+              remember: 1
+              type: password
+              user_login: user@example.com
+              user_password: password123
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                LoginSuccess:
+                  summary: Login succeeded
+                  value:
+                    login: true
+                    message: Logged in successfully
+                    success: true
+                MagicLinkSent:
+                  summary: Magic link login method
+                  value:
+                    authType: password-less
+                    success: true
+          description: Login or account type check
+        '401':
+          content:
+            application/json:
+              examples:
+                IncorrectPassword:
+                  summary: Incorrect password
+                  value:
+                    message: Incorrect password entered
+                    success: false
+                InvalidEmail:
+                  summary: Invalid email format
+                  value:
+                    message: Enter a valid email
+                    success: false
+                MissingDetails:
+                  summary: Not enough login details
+                  value:
+                    message: Not enough details provided
+                    success: false
+          description: Unauthorized due to missing or invalid credentials
+        '404':
+          content:
+            application/json:
+              example:
+                message: User doesn't exist
+                success: false
+          description: User not found
+      summary: POST to login or request a magic link
+      tags:
+      - auth/login
+  /obrn/v1/auth/reset:
+    post:
+      operationId: auth_reset_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example:
+              confirm_password: newPassword123!
+              key: reset-key-from-email
+              password: newPassword123!
+              user_login: user@example.com
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Failure:
+                  summary: Failed to reset password
+                  value:
+                    message: Something went wrong
+                    success: false
+                Success:
+                  summary: Password reset successfully
+                  value:
+                    message: Password reset
+                    success: true
+          description: Password reset response
+        '400':
+          content:
+            application/json:
+              example:
+                code: rest_invalid_param
+                data:
+                  status: 400
+                message: Passwords don't match
+          description: Password mismatch
+        '401':
+          content:
+            application/json:
+              examples:
+                InvalidKey:
+                  summary: Invalid reset key
+                  value:
+                    code: rest_forbidden
+                    data:
+                      status: 401
+                    message: Invalid key
+                MissingFields:
+                  summary: Not enough details
+                  value:
+                    code: rest_forbidden
+                    data:
+                      status: 401
+                    message: Not enough details provided
+          description: Unauthorized or missing required fields
+      summary: POST to reset user password using key
+      tags:
+      - auth/reset
+  /obrn/v1/auth/signup:
+    post:
+      operationId: auth_signup_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              user_email: newuser@example.com
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                EmailExists:
+                  summary: Email already registered
+                  value:
+                    message: Email already exists
+                    success: false
+                InvalidEmail:
+                  summary: Email not valid
+                  value:
+                    message: Invalid email
+                    success: false
+                SignupFailed:
+                  summary: Something went wrong during registration
+                  value:
+                    message: Something went wrong. Please try again later.
+                    success: false
+                SignupSuccess:
+                  summary: Signup successful
+                  value:
+                    message: Check your email
+                    success: true
+          description: Signup response
+      summary: POST to register a new user
+      tags:
+      - auth/signup
+  /obrn/v1/auth/signup/change:
+    post:
+      operationId: auth_signup_change_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example:
+              currentSubscriptionId: 15
+              membershipChangeAction: upgrade
+              newMembershipId: 4
+              proratedPrice: 9.99
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                DowngradeSuccess:
+                  summary: Downgrade scheduled successfully
+                  value: true
+                UpgradeSuccess:
+                  summary: Upgrade processed successfully
+                  value: true
+          description: Successful upgrade or downgrade response
+        '400':
+          content:
+            application/json:
+              example:
+                error: Invalid membership change action.
+          description: Invalid membership change action
+        '500':
+          content:
+            application/json:
+              examples:
+                MissingTransaction:
+                  summary: No valid transactions found
+                  value:
+                    error: No complete transactions found for the current subscription.
+                UnknownError:
+                  summary: Unexpected failure
+                  value:
+                    error: An error occurred
+          description: Failure due to server error or missing data
+      summary: POST to upgrade or downgrade a membership
+      tags:
+      - auth/signup/change
+  /obrn/v1/auth/signup/change/check:
+    get:
+      operationId: auth_signup_change_check_get
+      parameters:
+      - description: ID of the new membership being subscribed to
+        in: query
+        name: newMembershipId
+        required: true
+        schema:
+          example: 2
+          type: integer
+      - description: ID of the current subscription
+        in: query
+        name: currentSubscriptionId
+        required: true
+        schema:
+          example: 15
+          type: integer
+      - $ref: '#/components/parameters/nonceHeader'
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Allowed:
+                  summary: Change allowed
+                  value: true
+                BlockedByChildLimit:
+                  summary: Blocked due to child account limit
+                  value:
+                    error: Child account limit exceeded for the new membership.
+                    max_child_accounts: 3
+                BlockedByRules:
+                  summary: Blocked due to membership rules
+                  value:
+                    error: New membership rul prevent to change
+          description: Check result for membership change eligibility
+      summary: GET to check if a user can change their membership
+      tags:
+      - auth/signup/change/check
+  /obrn/v1/auth/signup/change/options:
+    get:
+      description: "\u26A0\uFE0F This endpoint is currently under development and\
+        \ may not return full data."
+      operationId: auth_signup_change_options_get
+      parameters:
+      - description: ID of the subscription to get available membership options for
+        in: query
+        name: subscription_id
+        required: false
+        schema:
+          example: 12
+          type: integer
+      - $ref: '#/components/parameters/nonceHeader'
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                message: This endpoint is under development and will return rendered
+                  shortcode for membership options.
+                status: in_progress
+          description: Membership options rendering (in progress)
+      summary: GET available membership options for a subscription
+      tags:
+      - auth/signup/change/options
+  /obrn/v1/auth/signup/change/payment:
+    post:
+      operationId: auth_signup_change_payment_post
+      parameters:
+      - $ref: '#/components/parameters/nonceHeader'
+      requestBody:
+        content:
+          application/json:
+            example:
+              currentSubscriptionId: 15
+              newMembershipId: 2
+              proratedPrice: 29.99
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                data:
+                  form_html: <form id="obrnSignup__Form-Membership" class="obrn obrnSignup__Form">...</form>
+                status: success
+          description: HTML form returned for subscription change
+        '401':
+          content:
+            application/json:
+              examples:
+                InactiveMembership:
+                  summary: Membership is not active
+                  value:
+                    message: You can't subscribe to this membership
+                    status: error
+                InvalidMembership:
+                  summary: Membership is inactive or not found
+                  value:
+                    message: No Membership Found
+                    status: error
+                NotLoggedIn:
+                  summary: User not logged in
+                  value:
+                    message: Please sign in or register to take out a membership
+                    status: error
+          description: User not logged in or membership issue
+      summary: POST to initiate membership change and receive payment form
+      tags:
+      - auth/signup/change/payment
+  /obrn/v1/auth/signup/change/price:
+    get:
+      operationId: auth_signup_change_price_get
+      parameters:
+      - description: ID of the new membership
+        in: query
+        name: newMembershipId
+        required: true
+        schema:
+          example: 3
+          type: integer
+      - description: ID of the current subscription
+        in: query
+        name: currentSubscriptionId
+        required: true
+        schema:
+          example: 12
+          type: integer
+      - $ref: '#/components/parameters/nonceHeader'
+      responses:
+        '200':
+          content:
+            application/json:
+              example: 9.99
+          description: Calculated prorated cost difference
+        '400':
+          content:
+            application/json:
+              examples:
+                InvalidInput:
+                  summary: Invalid membership or subscription ID
+                  value:
+                    error: Invalid membership ID or subscription ID
+                InvalidPrice:
+                  summary: Negative price or missing price
+                  value:
+                    error: Invalid price for the new membership
+          description: Invalid input or membership/subscription data
+        '403':
+          content:
+            application/json:
+              example: Unauthorized request
+          description: Unauthorized request (no nonce)
+        '500':
+          content:
+            application/json:
+              example:
+                error: Unable to fetch subscription details
+          description: Server error or missing subscription details
+      summary: GET to calculate prorated cost difference for membership change
+      tags:
+      - auth/signup/change/price
+  /obrn/v1/auth/signup/check-coupon:
+    get:
+      operationId: auth_signup_check_coupon_get
+      parameters:
+      - description: Coupon code to be validated
+        in: query
+        name: coupon
+        required: true
+        schema:
+          example: SUMMER20
+          type: string
+      - $ref: '#/components/parameters/nonceHeader'
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                coupon: SUMMER20
+                description: 20% off summer promotion
+                type: percentage
+                value: 20
+          description: Coupon validation successful
+        '401':
+          content:
+            application/json:
+              examples:
+                InvalidDateRange:
+                  summary: Coupon is not valid right now
+                  value: Coupon isn't valid
+                UsageLimitReached:
+                  summary: Coupon has reached its usage limit
+                  value: Coupon usage limit reached
+          description: Coupon is invalid or expired
+        '404':
+          content:
+            application/json:
+              example: No coupon found
+          description: Coupon code not found
+      summary: GET to validate a coupon code for signup
+      tags:
+      - auth/signup/check-coupon
+  /obrn/v1/auth/signup/check-membership-price:
+    get:
+      operationId: auth_signup_check_membership_price_get
+      parameters:
+      - in: query
+        name: coupon
+        required: false
+        schema:
+          example: WELCOME
+          type: string
+      - in: query
+        name: display_price
+        required: true
+        schema:
+          example: 49.99
+          type: number
+      - in: query
+        name: total_price
+        required: false
+        schema:
+          example: 59.99
+          type: number
+      - in: query
+        name: gateway
+        required: false
+        schema:
+          example: stripe
+          type: string
+      - in: query
+        name: membership_id
+        required: true
+        schema:
+          example: 5
+          type: integer
+      - in: query
+        name: user_id
+        required: true
+        schema:
+          example: 42
+          type: integer
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                InvalidPriceMatch:
+                  summary: Price mismatch
+                  value: false
+                ValidPriceMatch:
+                  summary: Valid membership pricing
+                  value: true
+          description: Price match validation result
+        '401':
+          content:
+            application/json:
+              examples:
+                InvalidMembership:
+                  summary: Membership not valid
+                  value:
+                    code: rest_forbidden
+                    data:
+                      status: 401
+                    message: Membership is invalid
+                NoGateway:
+                  summary: Gateway missing
+                  value:
+                    code: rest_forbidden
+                    data:
+                      status: 401
+                    message: No gateway submitted
+                UnauthorizedUser:
+                  summary: User ID mismatch
+                  value:
+                    code: rest_forbidden
+                    data:
+                      status: 401
+                    message: User is not authorized
+          description: Unauthorized or invalid membership
+      summary: GET to verify if membership pricing and gateway are valid
+      tags:
+      - auth/signup/check-membership-price
+  /obrn/v1/auth/signup/complete:
+    post:
+      operationId: auth_signup_complete_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              gateway: stripe
+              paymentIntent:
+                id: pi_3MzN3ECYJLkNwZxC1aX1sYcH
+              subscription_id: 55
+              transaction_id: 101
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                status: success
+                transaction:
+                  expires_at: '2025-05-02 10:00:00'
+                  id: 101
+                  payment_id: pi_3MzN3ECYJLkNwZxC1aX1sYcH
+                  status: complete
+                  subscription_id: 55
+                  tax_class: VAT_GB
+          description: Signup completion success with transaction data
+        '400':
+          content:
+            application/json:
+              examples:
+                InvalidData:
+                  summary: Invalid transaction/subscription info
+                  value:
+                    code: rest_invalid_param
+                    data:
+                      status: 400
+                    message: Invalid data
+                InvalidPayment:
+                  summary: Invalid Stripe payment intent or mismatch
+                  value:
+                    code: rest_invalid_param
+                    data:
+                      status: 400
+                    message: Payment still remaining
+                NoRequest:
+                  summary: Empty or malformed request
+                  value:
+                    code: rest_invalid_param
+                    data:
+                      status: 400
+                    message: Not a valid request
+          description: Bad request due to invalid data or incomplete payment
+      summary: POST to complete a signup and finalize payment via Stripe
+      tags:
+      - auth/signup/complete
+  /obrn/v1/auth/signup/start:
+    post:
+      operationId: auth_signup_start_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              coupon: WELCOME
+              currency: USD
+              display_price: 49.99
+              gateway: stripe
+              membership_id: 5
+              paypal_orderId: ''
+              subscription_id: 0
+              tax:
+                amount: 5
+                rate: 10
+              total_price: 4999
+              upgrade_action: 0
+              user_id: 42
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                subscription:
+                  created_at: '2025-05-02 12:00:00'
+                  gateway_type: stripe
+                  id: 201
+                  membership_id: 5
+                  status: pending
+                  user_id: 42
+                transaction:
+                  created_at: '2025-05-02 12:00:00'
+                  expires_at: '2026-05-02 12:00:00'
+                  gateway_type: stripe
+                  id: 312
+                  price: 49.99
+                  status: pending
+                  subscription_id: 201
+                  tax_amount: 5
+                  tax_rate: 10
+                  total: 49.99
+          description: Successful subscription and transaction creation
+        '400':
+          content:
+            application/json:
+              examples:
+                InvalidGateway:
+                  summary: Invalid payment method
+                  value:
+                    code: rest_invalid_param
+                    data:
+                      status: 400
+                    message: Not valid payment method
+                InvalidRequest:
+                  summary: Missing membership or user ID
+                  value:
+                    code: rest_invalid_param
+                    data:
+                      status: 400
+                    message: Invalid Request
+          description: Bad request due to invalid gateway or missing membership/user
+        '500':
+          content:
+            application/json:
+              example:
+                code: rest_internal_error
+                data:
+                  status: 500
+                message: Something went wrong
+          description: Server error during subscription creation
+      summary: POST to initiate signup and create subscription/transaction
+      tags:
+      - auth/signup/start
+  /obrn/v1/auth/verify:
+    post:
+      operationId: auth_verify_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              action: member_login
+              expiry: +1hour
+              type: code
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Failure:
+                  summary: Failed to generate verification
+                  value:
+                    message: Something went wrong
+                    success: false
+                SuccessCode:
+                  summary: Verification code sent
+                  value:
+                    message: Code sent
+                    success: true
+                SuccessLink:
+                  summary: Verification link sent
+                  value:
+                    message: Code sent
+                    success: true
+          description: Verification token generation result
+        '401':
+          content:
+            application/json:
+              example: Not a valid request
+          description: Unauthorized request or missing parameters
+      summary: POST to generate a verification code or link for a logged-in user
+      tags:
+      - auth/verify
+    put:
+      operationId: auth_verify_put
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              action: member_login
+              code: '123456'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                InvalidCode:
+                  summary: Verification failed
+                  value:
+                    message: Invalid code
+                    success: false
+                ValidCode:
+                  summary: Verification successful
+                  value:
+                    message: Code verified
+                    success: true
+          description: Verification result
+        '401':
+          content:
+            application/json:
+              example: Not a valid request
+          description: Unauthorized request due to missing user, action or code
+      summary: PUT to verify a submitted code for an action
+      tags:
+      - auth/verify
+  /obrn/v1/gateway/stripe/create-payment-intent:
+    post:
+      operationId: gateway_stripe_create_payment_intent_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              amount: 2999
+              currency: usd
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                client_secret: pi_3ABCdEFghijKlmnop_secret_1a2b3c4d5e6f7g8h9i0j
+          description: Stripe payment intent created
+        '401':
+          content:
+            application/json:
+              example:
+                code: rest_forbidden
+                data:
+                  status: 401
+                message: Nothing specified
+          description: Bad request or missing parameters
+      summary: POST to create a Stripe payment intent
+      tags:
+      - gateway/stripe
+  /obrn/v1/members:
+    get:
+      operationId: members_get
+      parameters:
+      - description: Search term to look up user information (email, name, login)
+        in: query
+        name: search
+        required: true
+        schema:
+          example: john
+          type: string
+      - description: WordPress REST API nonce for authentication
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+                totalCount: 2
+                users:
+                - ID: 12
+                  user_email: john@example.com
+                  user_nicename: johnsmith
+                - ID: 13
+                  user_email: jane@example.com
+                  user_nicename: jane.doe
+          description: List of matched users based on search query
+        '401':
+          content:
+            application/json:
+              example:
+                code: rest_forbidden
+                data:
+                  status: 401
+                message: No term provided
+          description: Search term not provided
+      summary: GET list of users matching search query
+      tags:
+      - members
+  /obrn/v1/memberships:
+    get:
+      operationId: memberships_get
+      parameters:
+      - description: Search term for membership titles
+        in: query
+        name: search
+        required: false
+        schema:
+          example: premium
+          type: string
+      - description: If provided, fetch a specific membership by ID
+        in: query
+        name: membership_id
+        required: false
+        schema:
+          example: 2
+          type: integer
+      - description: WordPress REST API nonce for authentication
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                MultipleMemberships:
+                  summary: Memberships matching search
+                  value:
+                    memberships:
+                    - ID: 1
+                      post_title: Premium Plan
+                    - ID: 2
+                      post_title: Standard Plan
+                    totalCount: 2
+                SingleMembership:
+                  summary: Single membership by ID
+                  value:
+                    membership:
+                      ID: 2
+                      post_title: Standard Plan
+                      status: active
+          description: Memberships retrieved by search or ID
+        '401':
+          content:
+            application/json:
+              example:
+                code: rest_forbidden
+                data:
+                  status: 401
+                message: No term provided
+          description: Missing search term or membership ID
+        '500':
+          content:
+            application/json:
+              example:
+                code: rest_internal_error
+                data:
+                  status: 500
+                message: Something went wrong
+          description: Server error on query failure
+      summary: GET to retrieve memberships via search or direct ID lookup
+      tags:
+      - memberships
+  /obrn/v1/settings/account:
+    post:
+      operationId: settings_account_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+            - key: site_name
+              value: Oberon Membership
+            - key: support_email
+              value: support@oberon.com
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Failure:
+                  summary: Failed to update any settings
+                  value: false
+                Success:
+                  summary: Settings updated successfully
+                  value: true
+          description: Settings update result
+      summary: POST to update plugin settings in the account section
+      tags:
+      - settings/account
+  /obrn/v1/settings/fields:
+    post:
+      operationId: settings_fields_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+            - name: school_name
+              placeholder: Enter school name
+              required: 'true'
+              type: text
+            - name: grade
+              options:
+              - Grade 1
+              - Grade 2
+              - Grade 3
+              placeholder: Select grade
+              required: 'false'
+              type: dropdown
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Failure:
+                  summary: Failed to save fields
+                  value: false
+                Success:
+                  summary: Fields saved
+                  value: true
+          description: Field configuration updated successfully
+      summary: POST to define and store custom form fields for membership
+      tags:
+      - settings/fields
+  /obrn/v1/settings/gateway:
+    post:
+      operationId: settings_gateway_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              gateway: stripe
+              stripe_publishable_key: pk_test_1234567890abcdef
+              stripe_secret_key: sk_test_1234567890abcdef
+              webhook_secret: whsec_testvalue
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Failure:
+                  summary: Failed to update any setting
+                  value: false
+                Success:
+                  summary: Settings updated
+                  value: true
+          description: Gateway settings update result
+        '401':
+          content:
+            application/json:
+              example:
+                code: rest_forbidden
+                data:
+                  status: 401
+                message: Not a valid request
+          description: Gateway not specified
+      summary: POST to configure payment gateway settings
+      tags:
+      - settings/gateway
+  /obrn/v1/settings/gateway/enable:
+    post:
+      operationId: settings_gateway_enable_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              enableDisable: enable
+              gateway: stripe
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Success:
+                  summary: Gateway status updated
+                  value: true
+          description: Gateway enable/disable status updated
+        '401':
+          content:
+            application/json:
+              examples:
+                InvalidRequest:
+                  summary: Missing or invalid gateway or status
+                  value:
+                    code: rest_forbidden
+                    data:
+                      status: 401
+                    message: Not a valid request
+          description: Invalid request format or invalid values
+      summary: POST to enable or disable a payment gateway
+      tags:
+      - settings/gateway
+  /obrn/v1/subscriptions:
+    delete:
+      operationId: subscriptions_delete
+      parameters:
+      - description: ID of the subscription to delete
+        in: query
+        name: subscriptionId
+        required: true
+        schema:
+          example: 101
+          type: integer
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Failure:
+                  summary: Subscription not found or deletion failed
+                  value: false
+                Success:
+                  summary: Subscription deleted
+                  value: true
+          description: Subscription deletion result
+        '404':
+          content:
+            application/json:
+              example:
+                code: rest_not_found
+                data:
+                  status: 404
+                message: No subscription specified
+          description: No subscription specified or not found
+      summary: DELETE a subscription by ID
+      tags:
+      - subscriptions
+    get:
+      operationId: subscriptions_get
+      parameters:
+      - description: Search term to find subscriptions by ID or user details
+        in: query
+        name: search
+        required: false
+        schema:
+          example: john
+          type: string
+      - description: Specific subscription ID to fetch
+        in: query
+        name: subscription_id
+        required: false
+        schema:
+          example: 101
+          type: integer
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                MultipleResults:
+                  summary: List of matching subscriptions
+                  value:
+                    subscriptions:
+                    - id: 101
+                      user:
+                        user_email: john@example.com
+                        user_login: johnsmith
+                    - id: 102
+                      user:
+                        user_email: jane@example.com
+                        user_login: jane.doe
+                    totalCount: 2
+                SingleSubscription:
+                  summary: Single subscription result
+                  value:
+                    subscription:
+                      id: 101
+                      membership_id: 3
+                      status: active
+                      user_id: 22
+          description: Subscription list or a single subscription
+        '401':
+          content:
+            application/json:
+              example:
+                code: rest_forbidden
+                data:
+                  status: 401
+                message: No term provided
+          description: Missing required query or subscription_id
+        '500':
+          content:
+            application/json:
+              example:
+                code: rest_internal_error
+                data:
+                  status: 500
+                message: Something went wrong
+          description: Unexpected failure in subscription query
+      summary: GET list of subscriptions or a specific one by ID
+      tags:
+      - subscriptions
+    post:
+      operationId: subscriptions_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              membership_id: 5
+              price: 9900
+              status: active
+              tax_enabled: true
+              user_id: 123
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                SubscriptionCreated:
+                  summary: Subscription created
+                  value:
+                    id: 456
+                    membership_id: 5
+                    status: active
+                    tax_amount: 1980
+                    tax_class: UK
+                    tax_rate: 20
+                    total: 11880
+                    user_id: 123
+          description: Subscription created or updated successfully
+        '500':
+          content:
+            application/json:
+              example:
+                code: rest_internal_error
+                data:
+                  status: 500
+                message: Something went wrong
+          description: Error creating or updating the subscription
+      summary: POST to create or update a subscription
+      tags:
+      - subscriptions
+  /obrn/v1/transactions:
+    delete:
+      operationId: transactions_delete
+      parameters:
+      - description: ID of the transaction to delete
+        in: query
+        name: transactionId
+        required: true
+        schema:
+          example: 789
+          type: integer
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Failure:
+                  summary: Transaction not found or deletion failed
+                  value: false
+                Success:
+                  summary: Transaction deleted
+                  value: true
+          description: Transaction deletion result
+        '404':
+          content:
+            application/json:
+              example:
+                code: rest_not_found
+                data:
+                  status: 404
+                message: No transaction specified
+          description: No transaction specified
+      summary: DELETE a transaction by ID
+      tags:
+      - transactions
+    post:
+      operationId: transactions_post
+      parameters:
+      - description: WordPress REST API nonce
+        in: header
+        name: x_wp_nonce
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              created_at: '2024-04-01 10:00:00'
+              expires_at: '2025-04-01 10:00:00'
+              gateway_type: stripe
+              price: 10000
+              status: complete
+              subscription_id: 105
+              tax_enabled: true
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                TransactionCreated:
+                  summary: Transaction created
+                  value:
+                    created_at: '2024-04-01 10:00:00'
+                    expires_at: '2025-04-01 10:00:00'
+                    gateway_type: stripe
+                    id: 202
+                    price: 10000
+                    status: complete
+                    subscription_id: 105
+                    tax_amount: 2000
+                    tax_class: UK
+                    tax_rate: 20
+                    total: 12000
+          description: Transaction created or updated successfully
+        '500':
+          content:
+            application/json:
+              example:
+                code: rest_internal_error
+                data:
+                  status: 500
+                message: Something went wrong
+          description: Failed to create or update the transaction
+      summary: POST to create or update a transaction
+      tags:
+      - transactions
+security:
+- nonceAuth: []
